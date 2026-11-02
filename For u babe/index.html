@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моя Любовь К Тебе 💖</title>
+    
+    <!-- Tailwind CSS (для быстрой верстки) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome (Иконки) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Montserrat:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti (для праздничного салюта) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        loveRed: '#ff3b6b',
+                        lovePink: '#ff758c',
+                        softPink: '#fff0f3',
+                        warmGold: '#ffd700',
+                    },
+                    fontFamily: {
+                        handwriting: ['Caveat', 'cursive'],
+                        cursive: ['Great Vibes', 'cursive'],
+                        sans: ['Montserrat', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- ==========================================
+         Секция CSS СТИЛЕЙ
+         ========================================== -->
+    <style>
+        /* Стилизация полосы прокрутки */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 240, 243, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #ff758c;
+            border-radius: 4px;
+        }
+
+        /* Романтичный градиентный фон страницы */
+        body {
+            background: linear-gradient(135deg, #1a001a 0%, #3a0024 35%, #5c0032 70%, #2b001e 100%);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        /* Canvas фон для летающих сердечек */
+        #bgCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Эффект Glassmorphism (Матовое стекло) */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(255, 77, 109, 0.25);
+        }
+
+        .glass-card-light {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Свечение текста и кнопок */
+        .glow-text {
+            text-shadow: 0 0 12px rgba(255, 117, 140, 0.8), 0 0 24px rgba(255, 59, 107, 0.5);
+        }
+        .glow-gold {
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+        }
+
+        .glow-button {
+            box-shadow: 0 0 20px rgba(255, 59, 107, 0.6);
+            transition: all 0.3s ease;
+        }
+        .glow-button:hover {
+            box-shadow: 0 0 30px rgba(255, 59, 107, 0.9), 0 0 10px rgba(255, 215, 0, 0.6);
+            transform: translateY(-2px);
+        }
+
+        /* Пульсация сердца */
+        @keyframes heartPulse {
+            0% { transform: scale(1); }
+            14% { transform: scale(1.15); }
+            28% { transform: scale(1); }
+            42% { transform: scale(1.15); }
+            70% { transform: scale(1); }
+        }
+
+        .pulse-heart {
+            animation: heartPulse 2s infinite ease-in-out;
+        }
+
+        /* Модальные окна */
+        .modal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-active {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen pb-16">
+
+    <!-- Canvas для летающих сердечек -->
+    <canvas id="bgCanvas"></canvas>
+
+    <!-- ПУСТОЙ ТЕГ ДЛЯ ВАШЕЙ МУЗЫКИ (Вставьте путь к вашему .mp3 файлу в src) -->
+    <audio id="bg-music" src="./Родная   DOVÚ.mp3" loop></audio>
+
+    <!-- Верхняя панель (Музыкальный плеер) -->
+    <header class="relative z-10 w-full max-w-5xl mx-auto px-4 pt-6 flex justify-between items-center">
+        <div class="flex items-center space-x-2 glass-card-light px-4 py-2 rounded-full border border-pink-400/30">
+            <span class="text-pink-300"><i class="fa-solid fa-heart pulse-heart text-red-400"></i></span>
+            <span class="font-cursive text-xl text-pink-200">Любовная атмосфера</span>
+        </div>
+
+        <button id="musicToggleBtn" onclick="toggleCustomAudio()" class="glass-card px-4 py-2 rounded-full flex items-center space-x-2 text-sm hover:bg-white/20 transition-all text-pink-200 border border-pink-300/30">
+            <i id="musicIcon" class="fa-solid fa-music text-pink-400"></i>
+            <span id="musicText">Включить музыку</span>
+        </button>
+    </header>
+
+    <!-- Основной контент -->
+    <main class="relative z-10 max-w-4xl mx-auto px-4 mt-6 space-y-12">
+
+        <!-- 1. Главный блок: Заголовок и Счётчик времени -->
+        <section class="glass-card rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden">
+            <div class="inline-block p-4 rounded-full bg-pink-500/20 mb-4 border border-pink-300/30">
+                <i class="fa-solid fa-heart-pulse text-4xl sm:text-5xl text-pink-400 pulse-heart"></i>
+            </div>
+
+            <h1 class="font-cursive text-5xl sm:text-7xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-pink-300 via-rose-200 to-red-400 glow-text mb-2">
+                Моя любовь к тебе...
+            </h1>
+            <p class="text-pink-100/80 text-sm sm:text-base max-w-lg mx-auto font-light mb-8">
+                Бесконечна, как вселенная, и согревает моё сердце каждый день.
+            </p>
+
+            <!-- Счётчик времени -->
+            <div class="bg-black/20 rounded-2xl p-6 border border-white/10 max-w-2xl mx-auto mb-8 shadow-inner">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-xs uppercase tracking-widest text-pink-300/80 font-semibold"><i class="fa-regular fa-clock mr-1"></i> Мы вместе уже:</span>
+                    <button onclick="openDateModal()" class="text-xs text-pink-300 hover:text-white underline transition">
+                        <i class="fa-solid fa-pen-to-square"></i> Настроить дату
+                    </button>
+                </div>
+                
+                <div id="counterGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div class="bg-white/10 rounded-xl p-3 text-center border border-pink-500/20">
+                        <span id="daysNum" class="block text-3xl sm:text-4xl font-bold text-pink-300 glow-text">0</span>
+                        <span class="text-xs text-pink-100/70">дней</span>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-3 text-center border border-pink-500/20">
+                        <span id="hoursNum" class="block text-3xl sm:text-4xl font-bold text-pink-300 glow-text">0</span>
+                        <span class="text-xs text-pink-100/70">часов</span>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-3 text-center border border-pink-500/20">
+                        <span id="minutesNum" class="block text-3xl sm:text-4xl font-bold text-pink-300 glow-text">0</span>
+                        <span class="text-xs text-pink-100/70">минут</span>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-3 text-center border border-pink-500/20">
+                        <span id="secondsNum" class="block text-3xl sm:text-4xl font-bold text-yellow-300 glow-gold">0</span>
+                        <span class="text-xs text-pink-100/70">секунд</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Кнопка вызова генератора -->
+            <button onclick="generateRandomNote()" class="glow-button bg-gradient-to-r from-pink-500 via-rose-500 to-red-500 text-white font-semibold text-lg px-8 py-4 rounded-full inline-flex items-center space-x-3 cursor-pointer">
+                <i class="fa-solid fa-sparkles text-yellow-300"></i>
+                <span>Нажми сюда для признания</span>
+                <i class="fa-solid fa-heart"></i>
+            </button>
+        </section>
+
+        <!-- 2. Генератор романтических записок -->
+        <section id="noteSection" class="glass-card rounded-3xl p-6 sm:p-8 relative">
+            <div class="flex items-center space-x-3 mb-4">
+                <i class="fa-solid fa-envelope-open-text text-2xl text-pink-400"></i>
+                <h2 class="text-xl sm:text-2xl font-bold text-pink-200">Генератор нежных слов</h2>
+            </div>
+            
+            <div class="bg-black/30 rounded-2xl p-6 min-h-[120px] flex items-center justify-center text-center border border-pink-300/20 relative">
+                <p id="typewriterText" class="font-handwriting text-2xl sm:text-3xl text-pink-100 leading-relaxed">
+                    «Нажми на кнопку выше, чтобы прочитать что-то особенное...»
+                </p>
+            </div>
+        </section>
+
+        <!-- 3. Интерактивная игра с кнопками -->
+        <section class="glass-card rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden">
+            <h2 class="font-cursive text-4xl sm:text-5xl text-pink-200 mb-4">Маленький вопрос...</h2>
+            <p class="text-pink-100/90 text-lg mb-8 font-medium">Ты любишь меня?</p>
+
+            <div id="buttonArea" class="relative min-h-[140px] flex flex-wrap justify-center items-center gap-6">
+                <!-- Кнопка ДА -->
+                <button onclick="handleYesClick()" class="glow-button bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold text-xl px-10 py-4 rounded-full border border-green-300/40 z-10 transition">
+                    Да! 💖
+                </button>
+
+                <!-- Убегающая кнопка НЕТ -->
+                <button id="noBtn" onmouseover="runAwayNoButton()" onclick="runAwayNoButton()" ontouchstart="runAwayNoButton()" class="bg-gray-600/60 hover:bg-gray-700/60 text-white/90 font-medium text-lg px-8 py-3 rounded-full border border-white/20 transition-all duration-200 absolute sm:relative">
+                    Нет 😜
+                </button>
+            </div>
+        </section>
+
+        <!-- 4. Карточки/Конверты с причинами любви -->
+        <section class="space-y-6">
+            <div class="text-center">
+                <h2 class="font-cursive text-4xl sm:text-5xl text-pink-200 mb-2">6 причин моей любви</h2>
+                <p class="text-pink-100/70 text-sm">Нажми на любую карточку, чтобы открыть послание</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div onclick="openEnvelope(0)" class="glass-card rounded-2xl p-5 hover:bg-white/15 transition cursor-pointer border border-pink-400/20 group">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-pink-500/30 text-pink-300 font-bold flex items-center justify-center text-sm">1</span>
+                        <i class="fa-solid fa-heart text-pink-400 group-hover:scale-125 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-pink-100 mb-1">Твоя улыбка</h3>
+                    <p class="text-xs text-pink-200/70">Она освещает даже самые пасмурные дни...</p>
+                </div>
+
+                <div onclick="openEnvelope(1)" class="glass-card rounded-2xl p-5 hover:bg-white/15 transition cursor-pointer border border-pink-400/20 group">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-pink-500/30 text-pink-300 font-bold flex items-center justify-center text-sm">2</span>
+                        <i class="fa-solid fa-star text-yellow-300 group-hover:scale-125 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-pink-100 mb-1">Твоя забота</h3>
+                    <p class="text-xs text-pink-200/70">То, как ты умеешь поддерживать и обнимать...</p>
+                </div>
+
+                <div onclick="openEnvelope(2)" class="glass-card rounded-2xl p-5 hover:bg-white/15 transition cursor-pointer border border-pink-400/20 group">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-pink-500/30 text-pink-300 font-bold flex items-center justify-center text-sm">3</span>
+                        <i class="fa-solid fa-fire text-rose-400 group-hover:scale-125 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-pink-100 mb-1">Твой смех</h3>
+                    <p class="text-xs text-pink-200/70">Самый прекрасный звук во всей Вселенной...</p>
+                </div>
+
+                <div onclick="openEnvelope(3)" class="glass-card rounded-2xl p-5 hover:bg-white/15 transition cursor-pointer border border-pink-400/20 group">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-pink-500/30 text-pink-300 font-bold flex items-center justify-center text-sm">4</span>
+                        <i class="fa-solid fa-eye text-indigo-300 group-hover:scale-125 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-pink-100 mb-1">Твои глаза</h3>
+                    <p class="text-xs text-pink-200/70">В них можно смотреть целую вечность...</p>
+                </div>
+
+                <div onclick="openEnvelope(4)" class="glass-card rounded-2xl p-5 hover:bg-white/15 transition cursor-pointer border border-pink-400/20 group">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-pink-500/30 text-pink-300 font-bold flex items-center justify-center text-sm">5</span>
+                        <i class="fa-solid fa-gem text-teal-300 group-hover:scale-125 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-pink-100 mb-1">Твоя уникальность</h3>
+                    <p class="text-xs text-pink-200/70">Таких невероятных людей больше нет на свете...</p>
+                </div>
+
+                <div onclick="openEnvelope(5)" class="glass-card rounded-2xl p-5 hover:bg-white/15 transition cursor-pointer border border-pink-400/20 group">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="w-8 h-8 rounded-full bg-pink-500/30 text-pink-300 font-bold flex items-center justify-center text-sm">6</span>
+                        <i class="fa-solid fa-infinity text-pink-300 group-hover:scale-125 transition-transform"></i>
+                    </div>
+                    <h3 class="font-bold text-lg text-pink-100 mb-1">Наше будущее</h3>
+                    <p class="text-xs text-pink-200/70">Мечты и моменты, которые нам ещё предстоит прожить...</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Подвал -->
+        <footer class="text-center pt-8 border-t border-white/10 text-pink-200/60 text-sm">
+            <p>Сделано с любовью и нежностью специально для тебя ❤️</p>
+        </footer>
+
+    </main>
+
+    <!-- Модальное окно причин -->
+    <div id="envelopeModal" class="modal opacity-0 invisible fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+        <div class="glass-card max-w-md w-full rounded-3xl p-6 sm:p-8 relative text-center border border-pink-300/40 shadow-2xl">
+            <button onclick="closeModal('envelopeModal')" class="absolute top-4 right-4 text-pink-300 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-pink-500/20 flex items-center justify-center text-pink-300 text-3xl">
+                <i id="modalIcon" class="fa-solid fa-heart"></i>
+            </div>
+            <h3 id="modalTitle" class="font-cursive text-4xl text-pink-200 mb-4">Заголовок</h3>
+            <p id="modalBody" class="font-handwriting text-2xl text-pink-100 leading-relaxed mb-6">
+                Текст послания...
+            </p>
+            <button onclick="closeModal('envelopeModal')" class="bg-gradient-to-r from-pink-500 to-rose-600 text-white px-6 py-2 rounded-full text-sm font-semibold hover:opacity-90 transition">
+                Сохранить в сердце 💖
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальное окно выбора даты -->
+    <div id="dateModal" class="modal opacity-0 invisible fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md">
+        <div class="glass-card max-w-sm w-full rounded-3xl p-6 relative text-center border border-pink-300/40 shadow-2xl">
+            <button onclick="closeModal('dateModal')" class="absolute top-4 right-4 text-pink-300 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="font-bold text-xl text-pink-200 mb-4">Когда всё началось?</h3>
+            <p class="text-xs text-pink-100/70 mb-4">Укажите дату начала ваших отношений:</p>
+            
+            <input type="date" id="startDateInput" class="w-full bg-black/40 border border-pink-400/40 rounded-xl px-4 py-3 text-white text-center mb-6 focus:outline-none focus:border-pink-400">
+            
+            <button onclick="saveCustomDate()" class="w-full bg-gradient-to-r from-pink-500 to-rose-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition">
+                Сохранить дату
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         Секция JAVASCRIPT ЛОГИКИ
+         ========================================== -->
+    <script>
+        /* 1. АНИМАЦИЯ ЛЕТАЮЩИХ СЕРДЕЧЕК (CANVAS) */
+        const canvas = document.getElementById('bgCanvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+        const particleCount = 45;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = canvas.height + Math.random() * 100;
+                this.size = Math.random() * 18 + 8;
+                this.speedY = Math.random() * 1.5 + 0.5;
+                this.speedX = Math.sin(Math.random() * Math.PI * 2) * 0.8;
+                this.opacity = Math.random() * 0.6 + 0.2;
+                this.type = Math.random() > 0.3 ? 'heart' : 'sparkle';
+                this.color = `hsla(${Math.random() * 40 + 330}, 100%, 75%, ${this.opacity})`;
+                this.rotation = Math.random() * Math.PI;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+            }
+
+            update() {
+                this.y -= this.speedY;
+                this.x += Math.sin(this.y * 0.01) * 0.5 + this.speedX;
+                this.rotation += this.rotationSpeed;
+
+                if (this.y < -30 || this.x < -30 || this.x > canvas.width + 30) {
+                    this.reset();
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.fillStyle = this.color;
+
+                if (this.type === 'heart') {
+                    ctx.beginPath();
+                    const topCurveHeight = this.size * 0.3;
+                    ctx.moveTo(0, topCurveHeight);
+                    ctx.bezierCurveTo(-this.size / 2, -topCurveHeight, -this.size, this.size / 3, 0, this.size);
+                    ctx.bezierCurveTo(this.size, this.size / 3, this.size / 2, -topCurveHeight, 0, topCurveHeight);
+                    ctx.closePath();
+                    ctx.fill();
+                } else {
+                    ctx.beginPath();
+                    for (let i = 0; i < 5; i++) {
+                        ctx.lineTo(Math.cos((18 + i * 72) * Math.PI / 180) * this.size * 0.5,
+                                   -Math.sin((18 + i * 72) * Math.PI / 180) * this.size * 0.5);
+                        ctx.lineTo(Math.cos((54 + i * 72) * Math.PI / 180) * this.size * 0.2,
+                                   -Math.sin((54 + i * 72) * Math.PI / 180) * this.size * 0.2);
+                    }
+                    ctx.closePath();
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) {
+            particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+
+        /* 2. СЧЁТЧИК ЛЮБВИ И ДАТЫ */
+        let relationshipStartDate = localStorage.getItem('loveStartDate') 
+            ? new Date(localStorage.getItem('loveStartDate')) 
+            : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000);
+
+        function updateTimerDisplay() {
+            const now = new Date();
+            const diff = now - relationshipStartDate;
+
+            if (diff < 0) {
+                document.getElementById('daysNum').innerText = 0;
+                document.getElementById('hoursNum').innerText = 0;
+                document.getElementById('minutesNum').innerText = 0;
+                document.getElementById('secondsNum').innerText = 0;
+                return;
+            }
+
+            document.getElementById('daysNum').innerText = Math.floor(diff / (1000 * 60 * 60 * 24));
+            document.getElementById('hoursNum').innerText = Math.floor((diff / (1000 * 60 * 60)) % 24);
+            document.getElementById('minutesNum').innerText = Math.floor((diff / (1000 * 60)) % 60);
+            document.getElementById('secondsNum').innerText = Math.floor((diff / 1000) % 60);
+        }
+
+        function startLoveTimer() {
+            updateTimerDisplay();
+            setInterval(updateTimerDisplay, 1000);
+        }
+
+        function openDateModal() {
+            document.getElementById('startDateInput').value = relationshipStartDate.toISOString().split('T')[0];
+            document.getElementById('dateModal').classList.add('modal-active');
+        }
+
+        function saveCustomDate() {
+            const inputVal = document.getElementById('startDateInput').value;
+            if (inputVal) {
+                relationshipStartDate = new Date(inputVal);
+                localStorage.setItem('loveStartDate', inputVal);
+                updateTimerDisplay();
+                closeModal('dateModal');
+            }
+        }
+
+        /* 3. ГЕНЕРАТОР ПРИЗНАНИЙ */
+        const loveNotes = [
+            "Ты — лучшее, что случалось со мной в этой жизни.",
+            "Каждая секунда рядом с тобой наполняет мой мир яркими красками.",
+            "Моё любимое место во всём мире — рядом с тобой.",
+            "Твой голос — моя самая любимая мелодия.",
+            "Спасибо за то, что ты есть. Ты моё настоящее счастье!",
+            "С тобой даже самые обычные дни превращаются в сказку.",
+            "Ты делаешь меня лучше каждый день одним своим присутствием."
+        ];
+
+        let currentNoteIndex = -1;
+        let isTyping = false;
+
+        function generateRandomNote() {
+            if (isTyping) return;
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * loveNotes.length);
+            } while (randomIndex === currentNoteIndex);
+            
+            currentNoteIndex = randomIndex;
+            typeText(loveNotes[currentNoteIndex]);
+        }
+
+        function typeText(text) {
+            const targetEl = document.getElementById('typewriterText');
+            targetEl.innerHTML = '';
+            isTyping = true;
+            let i = 0;
+
+            const timer = setInterval(() => {
+                if (i < text.length) {
+                    targetEl.innerHTML += text.charAt(i);
+                    i++;
+                } else {
+                    clearInterval(timer);
+                    isTyping = false;
+                }
+            }, 45);
+        }
+
+        /* 4. ИГРА: УБЕГАЮЩАЯ КНОПКА И САЛЮТ */
+        function runAwayNoButton() {
+            const btn = document.getElementById('noBtn');
+            const container = document.getElementById('buttonArea');
+            const rect = container.getBoundingClientRect();
+
+            const maxX = rect.width - btn.offsetWidth - 20;
+            const maxY = rect.height - btn.offsetHeight - 20;
+
+            const randomX = Math.max(10, Math.floor(Math.random() * maxX));
+            const randomY = Math.max(10, Math.floor(Math.random() * maxY));
+
+            btn.style.position = 'absolute';
+            btn.style.left = `${randomX}px`;
+            btn.style.top = `${randomY}px`;
+        }
+
+        function handleYesClick() {
+            const duration = 3 * 1000;
+            const animationEnd = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#ff3b6b', '#ff758c', '#ffd700']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#ff3b6b', '#ff758c', '#ffd700']
+                });
+
+                if (Date.now() < animationEnd) {
+                    requestAnimationFrame(frame);
+                }
+            })();
+
+            document.getElementById('modalTitle').innerText = "Я знал(а)! ❤️";
+            document.getElementById('modalBody').innerText = "Я люблю тебя ещё сильнее! Никакие кнопки «Нет» не смогут это изменить ✨";
+            document.getElementById('modalIcon').className = "fa-solid fa-heart-circle-check";
+            document.getElementById('envelopeModal').classList.add('modal-active');
+        }
+
+        /* 5. КАРТОЧКИ С ПРИЧИНАМИ */
+        const envelopeDetails = [
+            { title: "Твоя улыбка", icon: "fa-solid fa-heart text-pink-400", text: "Когда ты улыбаешься, весь мир вокруг становится светлее. Твоя искренняя улыбка мгновенно поднимает мне настроение!" },
+            { title: "Твоя забота", icon: "fa-solid fa-star text-yellow-300", text: "Ты даришь такое тепло и внимание, о котором можно только мечтать. Рядом с тобой всегда уютно." },
+            { title: "Твой смех", icon: "fa-solid fa-fire text-rose-400", text: "Твой звонкий смех — это самый прекрасный звук на Земле. Я готов(а) на всё, лишь бы слышать его как можно чаще!" },
+            { title: "Твои глаза", icon: "fa-solid fa-eye text-indigo-300", text: "В твоих глазах можно утонуть, в них столько глубины, доброты и нежности." },
+            { title: "Твоя уникальность", icon: "fa-solid fa-gem text-teal-300", text: "Ты сочетаешь в себе ум, чуткость и невероятное чувство юмора. Ты — настоящий подарок судьбы!" },
+            { title: "Наше будущее", icon: "fa-solid fa-infinity text-pink-300", text: "Я с нетерпением жду каждого нового дня, который мы проживём вместе. Впереди нас ждёт столько прекрасного!" }
+        ];
+
+        function openEnvelope(index) {
+            const data = envelopeDetails[index];
+            document.getElementById('modalTitle').innerText = data.title;
+            document.getElementById('modalBody').innerText = data.text;
+            document.getElementById('modalIcon').className = data.icon;
+            document.getElementById('envelopeModal').classList.add('modal-active');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('modal-active');
+        }
+
+        /* 6. УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЬСКОЙ МУЗЫКОЙ */
+        function toggleCustomAudio() {
+            const audioElement = document.getElementById('bg-music');
+            const btnText = document.getElementById('musicText');
+            const btnIcon = document.getElementById('musicIcon');
+
+            if (!audioElement.src || audioElement.src === window.location.href) {
+                alert("Чтобы включить музыку, укажите ссылку на ваш .mp3 файл в теге <audio id='bg-music' src='ВАШ_ФАЙЛ.mp3'></audio> в коде страницы.");
+                return;
+            }
+
+            if (audioElement.paused) {
+                audioElement.play();
+                btnText.innerText = "Выключить музыку";
+                btnIcon.className = "fa-solid fa-volume-high text-pink-400 animate-pulse";
+            } else {
+                audioElement.pause();
+                btnText.innerText = "Включить музыку";
+                btnIcon.className = "fa-solid fa-music text-pink-400";
+            }
+        }
+
+        window.onload = function() {
+            animateParticles();
+            startLoveTimer();
+        };
+    </script>
+</body>
+</html>
